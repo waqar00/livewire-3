@@ -1,8 +1,9 @@
 <?php
 
-use App\Http\Controllers\HomeController;
 use App\Livewire\Counter;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
 
@@ -23,6 +24,7 @@ Route::get('/product-edit', [ProductController::class, 'index']);
 Route::get('/product-delete', [ProductController::class, 'index']);
 Route::resource('users', UserController::class);
 Route::get('/', HomeController::class)->name('home');
+Route::get('/blog', [PostController::class,'index'])->name('posts.index');
 Route::get('/counter', Counter::class);
 
 
@@ -31,7 +33,7 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    // Route::get('/dashboard', function () {
+    //     return view('dashboard');
+    // })->name('dashboard');
 });
