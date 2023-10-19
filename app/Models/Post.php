@@ -4,23 +4,37 @@ namespace App\Models;
 
 
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Post extends Model
 {
     use HasFactory;
+    protected $casts = [
+        'published_at' => 'datetime',
+    ];
+
     public function author()
     {
-        return $this->belongsTo(User::class,'user_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
     public function scopePublished($query)
     {
-        return $query->where('published_at','<=',Carbon::now());
+        return $query->where('published_at', '<=', Carbon::now());
     }
 
     public function scopeFeatured($query)
     {
-        return $query->where('featured',true);
+        return $query->where('featured', true);
+    }
+    public function getExcerpt()
+    {
+        return Str::limit(strip_tags($this->body), 50);
+    }
+    public function getReadingTime()
+    {
+        $min = round(str_word_count($this->body) / 250);
+        return ($min < 1) ? 1 : $min;
     }
 }
