@@ -2,18 +2,21 @@
 
 namespace App\Filament\Resources;
 
+use Closure;
 use Filament\Forms;
 use Filament\Tables;
+use Filament\Forms\Set;
 use App\Models\Category;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 use Filament\Resources\Resource;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\CategoryResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\CategoryResource\RelationManagers;
-use Filament\Tables\Columns\TextColumn;
 
 class CategoryResource extends Resource
 {
@@ -25,9 +28,14 @@ class CategoryResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('title')->required(),
-                TextInput::make('slug')->required(),
-                TextInput::make('body')->required(),
+                TextInput::make('title')->required()->reactive()
+                ->afterStateUpdated(function (string $operation ,$state, Set $set ) {
+                    if ($operation ==='edit'){
+                        return ;
+                    }
+                    $set('slug', Str::slug($state));
+                }),
+                TextInput::make('slug')->required()->unique(ignoreRecord:true),
                 TextInput::make('bg_coler')->nullable(),
                 TextInput::make('text_coler')->nullable(),
             ]);
@@ -39,7 +47,6 @@ class CategoryResource extends Resource
             ->columns([
                 TextColumn::make('title')->sortable()->searchable(),
                 TextColumn::make('slug')->sortable()->searchable(),
-                TextColumn::make('body')->sortable()->searchable(),
                 TextColumn::make('bg_coler')->sortable()->searchable(),
                 TextColumn::make('text_coler')->sortable()->searchable(),
             ])
